@@ -1,0 +1,49 @@
+Release notes
+
+General description
+This program runs unit tests to verify insert, erase, append, undo-redo and load-save operations on the buffer manager object based on the requirements specified.
+
+Contents
+Source files
+-	IBuffer.h
+-	ICommand.h
+-	Buffer.hpp
+-	Insert.hpp
+-	Erase.hpp
+-	Load.hpp
+-	Replace.hpp
+-	Save.hpp
+-	Insert.cpp
+-	Erase.cpp
+-	Load.cpp
+-	Replace.cpp
+-	Buffer.cpp
+-	Save.cpp
+-	main.cpp
+
+Build script
+-	makefile
+
+Sample log
+-	sample.log
+
+Notes
+-	release_notes.txt
+
+For test
+-	LoadTest.txt
+-	SaveTest.txt
+
+
+Pre-requisites to compile code
+- gcc compiler ( with g++ and C++11 support)
+
+Steps to run program
+-	Copy “Buffer” folder to /<your folder>.
+-	From terminal, run following commands to build source files and run this program
+	cd /<your folder>/Buffer
+	make && ./buffer.out
+    make clean to clean the build
+	make clean && make to re-build
+
+Sample output is shown in ./Sample.log

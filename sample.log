@@ -1,0 +1,258 @@
+
+
+############ VERIFY INSERT OPERATIONS #################
+
+"def"
+INSERT TEST 1: Create a buffer
+PASS
+INSERT TEST 2: Insert at the beginning of the buffer
+INSERT substring "abc" at 0 index to "def"
+"abcdef"
+PASS
+INSERT TEST 3: Insert at the middle of the buffer
+INSERT substring " " at 3 index to "abcdef"
+"abc def"
+PASS
+INSERT TEST 4: Insert at the end of the buffer
+INSERT substring "ghi" at 7 index to "abc def"
+"abc defghi"
+PASS
+INSERT TEST 5: Insert outside the range of the buffer
+INSERT substring "insert_out_of_range" at 15 index to "abc defghi"
+"PASS: Exception caught.
+
+
+############ VERIFY APPEND OPERATIONS #################
+
+"abc"
+APPEND TEST 1: Create a buffer
+PASS
+APPEND TEST 2: Append a substring.
+INSERT substring "def" at 3 index to "abc"
+"abcdef"
+PASS
+APPEND TEST 3: Append to a empty buffer.
+""
+INSERT substring "xyz" at 0 index to ""
+"xyz"
+PASS
+
+
+############ VERIFY ERASE OPERATIONS #################
+
+"abcdefg"
+ERASE TEST 1: Create a buffer
+PASS
+ERASE TEST 2: Erase 3 characters from the middle of the buffer
+ERASE 3 characters from "abcdefg" at 2 index.
+"abfg"
+PASS
+ERASE TEST 3: Erase one character from the beginning of the buffer
+ERASE 1 characters from "abfg" at 0 index.
+"bfg"
+PASS
+ERASE TEST 4: Erase one character from the end of the buffer
+ERASE 1 characters from "bfg" at 2 index.
+"bf"
+PASS
+ERASE TEST 5: Erase one character from the end of the buffer
+ERASE 1 characters from "bf" at 1 index.
+"b"
+PASS
+ERASE TEST 6: Erase one character from the end of the buffer
+ERASE 1 characters from "b" at 0 index.
+""
+PASS
+ERASE TEST 6: Erase one character from an empty buffer
+ERASE 1 characters from "" at 0 index.
+""
+PASS
+ERASE TEST 7: Erase one character from an empty buffer at first index which doesnot exist
+ERASE 1 characters from "" at 1 index.
+PASS: Exception caught.
+INSERT substring "abcd" at 0 index to ""
+"abcd"
+ERASE TEST 8: Erase a character from end of the buffer
+ERASE 1 characters from "abcd" at 4 index.
+"abcd"
+PASS
+ERASE TEST 9: Erase a character from an index outside the buffer
+ERASE 1 characters from "abcd" at 5 index.
+PASS: Exception caught.
+ERASE TEST 10: Erase 10 characters from beginning of the buffer whose length is 4
+ERASE 10 characters from "abcd" at 0 index.
+""
+PASS
+INSERT substring "abcd" at 0 index to ""
+"abcd"
+ERASE TEST 11: Erase 10 characters from second index of the buffer whose length is 4
+ERASE 10 characters from "abcd" at 2 index.
+"ab"
+PASS
+INSERT substring "cd" at 2 index to "ab"
+"abcd"
+ERASE TEST 12: Erase trailing 3 characters
+ERASE 3 characters from "abcd" at 1 index.
+"a"
+PASS
+ERASE TEST 13: Erase trailing 3 characters from buf whose length is 1
+ERASE 3 characters from "a" at 0 index.
+""
+PASS
+
+
+############ VERIFY REPLACE OPERATIONS #################
+
+"abc abc abc"
+REPLACE TEST 1: Create a buffer
+PASS
+REPLACE TEST 2: Replace all occurrences of a substring by another.
+REPLACE all occurrences of "abc" with "xyz" in "abc abc abc"
+"xyz xyz xyz"
+PASS
+REPLACE TEST 2: Replace all occurrences of a substring by another.
+REPLACE all occurrences of "z " with "a" in "xyz xyz xyz"
+"xyaxyaxyz"
+PASS
+REPLACE TEST 3: No occurrences found.
+REPLACE all occurrences of "p" with "q" in "xyaxyaxyz"
+"xyaxyaxyz"
+PASS
+
+
+############ VERIFY REDO-UNDO OPERATIONS #################
+
+"def"
+UNDO_REDO TEST 1: Create a buffer. 
+PASS
+Undo: ERASE 3 characters from "def" at 0 index.
+""
+PASS
+Undo: Nothing to undo
+PASS
+Redo: INSERT substring "def" at 0 index to ""
+"def"
+PASS
+Redo: Nothing to redo
+PASS
+Undo: ERASE 3 characters from "def" at 0 index.
+""
+PASS
+UNDO_REDO TEST 2: Insert at the beginning of the buffer.
+INSERT substring "abcdef" at 0 index to ""
+"abcdef"
+Insert successful
+Undo: ERASE 6 characters from "abcdef" at 0 index.
+""
+PASS
+Redo: INSERT substring "abcdef" at 0 index to ""
+"abcdef"
+PASS
+Redo: INSERT substring "def" at 0 index to "abcdef"
+"defabcdef"
+PASS
+Redo: Nothing to redo
+PASS
+Undo: ERASE 3 characters from "defabcdef" at 0 index.
+"abcdef"
+PASS
+Undo: ERASE 6 characters from "abcdef" at 0 index.
+""
+PASS
+Undo: Nothing to undo
+PASS
+UNDO_REDO TEST 3: Append at the end of the buffer.
+INSERT substring "abcdefabc" at 0 index to ""
+"abcdefabc"
+Append successful
+Undo: ERASE 9 characters from "abcdefabc" at 0 index.
+""
+PASS
+Redo: INSERT substring "abcdefabc" at 0 index to ""
+"abcdefabc"
+PASS
+Redo: INSERT substring "abcdef" at 0 index to "abcdefabc"
+"abcdefabcdefabc"
+PASS
+Redo: INSERT substring "def" at 0 index to "abcdefabcdefabc"
+"defabcdefabcdefabc"
+PASS
+Redo: Nothing to redo
+PASS
+UNDO_REDO TEST 3: Replace at the end of the buffer.
+REPLACE all occurrences of "abc" with "xyz" in "defabcdefabcdefabc"
+"defxyzdefxyzdefxyz"
+Replace successful
+Undo: REPLACE all occurrences of "xyz" with "abc" in "defxyzdefxyzdefxyz"
+"defabcdefabcdefabc"
+PASS
+Undo: ERASE 3 characters from "defabcdefabcdefabc" at 0 index.
+"abcdefabcdefabc"
+PASS
+Redo: INSERT substring "def" at 0 index to "abcdefabcdefabc"
+"defabcdefabcdefabc"
+PASS
+Redo: REPLACE all occurrences of "abc" with "xyz" in "defabcdefabcdefabc"
+"defxyzdefxyzdefxyz"
+PASS
+UNDO_REDO TEST 4: Erase from the beginning of the buffer.
+ERASE 3 characters from "defxyzdefxyzdefxyz" at 15 index.
+"defxyzdefxyzdef"
+Erase successful
+ERASE 3 characters from "defxyzdefxyzdef" at 3 index.
+"defdefxyzdef"
+Erase successful
+Undo: INSERT substring "xyz" at 3 index to "defdefxyzdef"
+"defxyzdefxyzdef"
+PASS
+Undo: INSERT substring "xyz" at 15 index to "defxyzdefxyzdef"
+"defxyzdefxyzdefxyz"
+PASS
+Undo: REPLACE all occurrences of "xyz" with "abc" in "defxyzdefxyzdefxyz"
+"defabcdefabcdefabc"
+PASS
+Redo: REPLACE all occurrences of "abc" with "xyz" in "defabcdefabcdefabc"
+"defxyzdefxyzdefxyz"
+PASS
+Redo: ERASE 3 characters from "defxyzdefxyzdefxyz" at 15 index.
+"defxyzdefxyzdef"
+PASS
+
+
+############ VERIFY LOAD-SAVE OPERATIONS #################
+
+""
+LOAD TEST 1: Load a file whose name is empty
+Filepath: 
+PASS: Exception caught.
+LOAD TEST 2: Load a file which is not a TXT file
+Filepath: a.a
+PASS: Exception caught.
+LOAD TEST 3: Load a TXT file that doesnot exist.
+Filepath: a.txt
+PASS: Exception caught.
+LOAD TEST 4: Load a TXT file that exists.
+Filepath: LoadTest.txt
+PASS
+LOAD TEST 5: Load the same TXT file again.
+Filepath: LoadTest.txt
+PASS
+SAVE TEST 1: Save to a file whose name is empty
+Filepath: 
+PASS: Exception caught.
+SAVE TEST 2: Save to a file which is not a TXT file
+Filepath: a.a
+PASS: Exception caught.
+SAVE TEST 3: Save to a TXT file
+REPLACE all occurrences of "abc" with "xyz" in "abc def hij abc def hij"
+"xyz def hij xyz def hij"
+Filepath: SaveTest.txt
+SAVE TEST 4: Save again
+Filepath: SaveTest.txt
+Load SaveTest.ext and verify
+Filepath: SaveTest.txt
+PASS
+
+
+########################## END #################
+
